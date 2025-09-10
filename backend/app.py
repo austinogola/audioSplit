@@ -14,7 +14,7 @@ from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 import jwt
 import wget
-from supabase_utils import (upload_audio_to_supabase,check_file_exists_in_bucket,download_file_from_bucket)
+# from supabase_utils import (upload_audio_to_supabase,check_file_exists_in_bucket,download_file_from_bucket)
 from functools import wraps
 import threading
 import datetime

@@ -9,8 +9,8 @@ WORKDIR /app
 # Copy dependency files
 COPY requirements.txt .
 COPY runtime.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
+# RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install  -r requirements.txt
 # Copy project files
 COPY . .
 
