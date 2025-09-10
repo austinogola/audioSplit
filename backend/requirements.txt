@@ -1,0 +1,13 @@
+tensorflow==2.12
+spleeter
+flask==2.0.3
+werkzeug==2.2.3
+click==7.1.2
+python-dotenv
+flask-cors
+gunicorn
+flask-pymongo==2.3.0
+flask-bcrypt
+pyjwt
+pydub
+wget
