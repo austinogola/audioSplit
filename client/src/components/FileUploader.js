@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-export default function FileUploader({ onFileSelect }) {
+export default function FileUploader({ onFileSelect,nameText }) {
   const [dragging, setDragging] = useState(false);
 
   const handleDrop = (e) => {
@@ -25,7 +25,7 @@ export default function FileUploader({ onFileSelect }) {
       onDragLeave={() => setDragging(false)}
       onDrop={handleDrop}
     >
-      <p className="text-gray-400">Drag & drop or click to upload</p>
+      <p className="text-gray-400">{nameText || "Drag & drop or click to upload"}</p>
       <input
         type="file"
         accept="audio/*,video/*"

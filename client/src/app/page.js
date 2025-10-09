@@ -10,12 +10,22 @@ export default function Home() {
   const [quality, setQuality] = useState("standard");
   const [loading, setLoading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState(null);
+
+  const setRawFile=(e)=>{
+    if(e){
+      console.log('IT IS HERE')
+    }else{
+      console.log('IT IS NOT HERE')
+    }
+    console.log(e)
+    setFile(e)
+  }
   
 
-  const handleSubmit = async () => {
-    if (!file) return alert("Please upload a file first.");
-    setLoading(true);
-    setDownloadUrl(null);
+  // const handleSubmit = async () => {
+  //   if (!file) return alert("Please upload a file first.");
+  //   setLoading(true);
+  //   setDownloadUrl(null);
     // try {
     //   const formData = new FormData();
     //   formData.append("file", file);
@@ -37,16 +47,63 @@ export default function Home() {
     //   setLoading(false);
     // }
 
-     try {
-      const blob = await separateAudio(file, stems, quality);
-      const url = window.URL.createObjectURL(blob);
-      setDownloadUrl(url);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //    try {
+  //     const blob = await separateAudio(file, stems, quality);
+  //     const url = window.URL.createObjectURL(blob);
+  //     console.log('Finished',url)
+  //     setDownloadUrl(url);
+      
+      
+  //   } catch (err) {
+  //     setError(err.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const handleSubmit = async () => {
+      if (!file) return alert("Please upload a file first.");
+      setLoading(true);
+      setDownloadUrl(null);
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("stems", stems);
+      formData.append("quality", quality);
+
+      try {
+        // Upload and get jobId
+        const res = await fetch("http://localhost:5000/separate", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        console.log(data)
+        const jobId = data.jobId;
+
+        if (!jobId) throw new Error("No job ID returned");
+
+        // Poll progress
+        const pollInterval = setInterval(async () => {
+          const progressRes = await fetch(`http://localhost:5000/progress/${jobId}`);
+          const progressData = await progressRes.json();
+
+          if (progressData.status === "done") {
+            clearInterval(pollInterval);
+            setLoading(false);
+            window.location.href = `/results/${jobId}`;
+          } else if (progressData.status === "error") {
+            clearInterval(pollInterval);
+            setLoading(false);
+            alert("Error: " + progressData.error);
+          }
+        }, 3000);
+      } catch (err) {
+        alert("Upload failed: " + err.message);
+        setLoading(false);
+      }
+    };
+
 
   if (loading) return <LoadingIndicator />;
 
@@ -76,7 +133,7 @@ export default function Home() {
         </p>
 
         <div className="w-full max-w-md bg-gray-800 rounded-2xl p-6 shadow-xl">
-          <FileUploader onFileSelect={setFile} />
+          <FileUploader onFileSelect={setRawFile} nameText={file ? file.name : null}/>
 
           <div className="mt-6 space-y-4">
             <select
